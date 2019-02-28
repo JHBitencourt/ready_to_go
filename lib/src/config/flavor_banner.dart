@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ready_to_go/src/config/device_info_dialog.dart';
 import 'package:ready_to_go/src/config/flavor_config.dart';
 
 class FlavorBanner extends StatelessWidget {
@@ -45,6 +46,11 @@ class FlavorBanner extends StatelessWidget {
           ),
         ),
       ),
+      onLongPress: () {
+        showDialog(context: context, builder: (BuildContext context) {
+          return DeviceInfoDialog();
+        });
+      },
     );
   }
 }
