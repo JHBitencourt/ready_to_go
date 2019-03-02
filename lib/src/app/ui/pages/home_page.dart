@@ -1,15 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:ready_to_go/src/config/flavor_banner.dart';
-import 'package:ready_to_go/src/config/flavor_config.dart';
+import 'package:ready_to_go/src/app/bloc/bloc_provider.dart';
+import 'package:ready_to_go/src/app/bloc/home_bloc.dart';
+import 'package:ready_to_go/src/app/model/bean/person.dart';
 
 class HomePage extends StatelessWidget {
 
+  HomeBloc _bloc;
+
   @override
   Widget build(BuildContext context) {
-    return FlavorBanner(
-      child: Scaffold(
-        appBar: AppBar(title: Text('Flutter Ready to Go')),
-        body: Center(child: Text("Flavor: ${FlavorConfig.instance.name}")),
+    _bloc = BlocProvider.of<HomeBloc>(context);
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Flutter Ready to Go')),
+      body: StreamBuilder(
+          stream: _bloc.personStream,
+          builder: (context, AsyncSnapshot<Person> snapshot) {
+            if(!snapshot.hasData) return Center(child: CircularProgressIndicator());
+
+            final person = snapshot.data;
+            return _buildPersonInfo(person);
+          }
+      ),
+    );
+  }
+
+  Widget _buildPersonInfo(Person person) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _buildText("Api URL: ${person.apiUrl}", 22.0)
+          ],
+        ),
+        _buildText("Name: ${person.name} ${person.lastName}", 16.0),
+        _buildText("Github: ${person.github}", 16.0),
+        _buildText("Twitter: ${person.twitter}", 16.0),
+        _buildText("Website: ${person.website}", 16.0),
+      ],
+    );
+  }
+
+  Widget _buildText(String text, double fontSize) {
+    return Padding(
+      padding: EdgeInsets.only(top: 20.0, right: 10.0, left: 10.0),
+      child: Text(text,
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+              fontSize: fontSize
+          )
       ),
     );
   }
