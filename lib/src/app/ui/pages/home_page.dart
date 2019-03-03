@@ -1,10 +1,13 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:ready_to_go/src/app/bloc/bloc_provider.dart';
 import 'package:ready_to_go/src/app/bloc/home_bloc.dart';
 import 'package:ready_to_go/src/app/model/bean/person.dart';
+import 'package:ready_to_go/src/app/model/core/connectivity_handler.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatelessWidget implements ConnectivityHandler {
 
+  final _keyScaffold = new GlobalKey<ScaffoldState>();
   HomeBloc _bloc;
 
   @override
@@ -12,6 +15,7 @@ class HomePage extends StatelessWidget {
     _bloc = BlocProvider.of<HomeBloc>(context);
 
     return Scaffold(
+      key: _keyScaffold,
       appBar: AppBar(title: Text('Flutter Ready to Go')),
       body: StreamBuilder(
           stream: _bloc.personStream,
@@ -55,6 +59,29 @@ class HomePage extends StatelessWidget {
           )
       ),
     );
+  }
+
+  @override
+  void onConnectivityChanged(ConnectivityResult connectivity) {
+    showSnackBar("Connectivity changed to ${connectivity}");
+
+    if (!_bloc.dataLoaded && (connectivity == ConnectivityResult.wifi ||
+        connectivity == ConnectivityResult.mobile)) {
+      _bloc.fetchData(this);
+    }
+  }
+
+  @override
+  void onError(String error) {
+    showSnackBar(error);
+  }
+
+  void showSnackBar(String text, [int time = 2000]){
+    final snackbar = new SnackBar(
+      content: new Text(text),
+      duration: Duration(milliseconds: time),
+    );
+    _keyScaffold?.currentState.showSnackBar(snackbar);
   }
 
 }

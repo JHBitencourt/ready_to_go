@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ready_to_go/src/app/bloc/application_bloc.dart';
 import 'package:ready_to_go/src/app/bloc/bloc_provider.dart';
 import 'package:ready_to_go/src/app/bloc/home_bloc.dart';
 import 'package:ready_to_go/src/app/ui/pages/home_page.dart';
@@ -8,8 +9,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(
-      bloc: HomeBloc(),
+    return BlocProvider<ApplicationBloc>(
+      bloc: ApplicationBloc(),
       child: MaterialApp(
         title: 'Ready to Go',
         onGenerateRoute: _routes,
@@ -21,13 +22,19 @@ class MyApp extends StatelessWidget {
     if (settings.isInitialRoute)
       return MaterialPageRoute(
           builder: (context) {
-            var homePage = HomePage();
+            final homePage = HomePage();
 
-            final homebloc = BlocProvider.of<HomeBloc>(context);
-            homebloc.fetchData();
+            final applicationBloc = BlocProvider.of<ApplicationBloc>(context);
+            applicationBloc.listenConnectivity(homePage);
 
-            return FlavorBanner(
-              child: homePage,
+            final homebloc = HomeBloc();
+            homebloc.fetchData(homePage);
+
+            return BlocProvider<HomeBloc>(
+              bloc: homebloc,
+              child: FlavorBanner(
+                child: homePage,
+              ),
             );
           }
       );

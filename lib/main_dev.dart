@@ -5,7 +5,8 @@ import 'package:ready_to_go/src/config/flavor_config.dart';
 void main() {
   FlavorConfig(flavor: Flavor.DEV,
       color: Colors.green,
-      values: FlavorValues(baseUrl: ""));
+      values: FlavorValues(baseUrl: "")
+  );
 
   runApp(MyApp());
 }

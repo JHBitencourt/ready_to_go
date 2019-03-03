@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ready_to_go/src/app/bloc/bloc_provider.dart';
 import 'package:ready_to_go/src/app/model/bean/person.dart';
+import 'package:ready_to_go/src/app/model/core/connectivity_handler.dart';
 import 'package:ready_to_go/src/app/model/data/repository.dart';
 
 class HomeBloc implements BlocBase {
@@ -14,12 +15,13 @@ class HomeBloc implements BlocBase {
   Stream<Person> get personStream => _personController.stream;
   bool get dataLoaded => _dataLoaded;
 
-  void fetchData() async {
+  void fetchData(ConnectivityHandler delegate) async {
     try {
       final person = await _repository.fetchData();
+      _dataLoaded = true;
       _personController.sink.add(person);
     } catch(e) {
-      print("Temporarily printing errors " + e);
+      delegate.onError(e.toString());
     }
   }
 
